@@ -2,6 +2,8 @@ const box = document.getElementById('box');
 const shadow = document.getElementById('shadow');
 const body = document.getElementById('body');
 const startGameButton = document.querySelector('#startButton');
+const shadowButton = document.querySelector('#buttonShadow');
+const rulesButton = document.querySelector('#rulesButton')
 let positionX = 0;
 let positionY = 0;
 let direction = 1;
@@ -30,37 +32,34 @@ function enemyGenerator(){
 
 function enemySpawner(){
     let edge = Math.floor(Math.random() * 4 + 1);
+    enemyGenerator();
     switch(edge){
         case 1:
-            enemyPositionX = Math.floor(Math.random() * globalThis.innerWidth);
+            enemyPositionX = Math.floor(Math.random() * (globalThis.innerWidth - enemy.offsetWidth));
             enemyPositionY = 0;
             break;
         case 2:
-            enemyPositionX = globalThis.innerWidth;
-            enemyPositionY = Math.floor(Math.random() * globalThis.innerHeight);
+            enemyPositionX = globalThis.innerWidth - enemy.offsetWidth;
+            enemyPositionY = Math.floor(Math.random() * (globalThis.innerHeight - enemy.offsetHeight));
             break;
         case 3:
-            enemyPositionX = Math.floor(Math.random() * globalThis.innerWidth);
-            enemyPositionY = globalThis.innerHeight;
+            enemyPositionX = Math.floor(Math.random() * (globalThis.innerWidth - enemy.offsetWidth));
+            enemyPositionY = globalThis.innerHeight - enemy.offsetHeight;
             break;
         case 4:
             enemyPositionX = 0;
-            enemyPositionY = Math.floor(Math.random() * globalThis.innerWidth);
+            enemyPositionY = Math.floor(Math.random() * (globalThis.innerHeight - enemy.offsetHeight));
             break;
     }
 
-    enemyGenerator();
     enemy.style.left = enemyPositionX + "px";
     enemy.style.top = enemyPositionY + "px";
+}
+
+function moveEnemy(){
 
 }
 
-function startGame (){
-    positionX = farRight / 2;
-    positionY = farDown / 2;
-    box.style.visibility = "visible";
-    startGameButton.style.visibility = "hidden";
-}
 
 startGameButton.addEventListener('click', startGame);
 const SPEED = 10;
@@ -68,6 +67,8 @@ const SPEED_DIAGONAL = SPEED / Math.sqrt(2);
 
 const clamp = (n, max, min) => Math.max(Math.min(n, max), min);
 
+
+// i have no fucking idea what is happening here. it was supposed to movement function but i guess its the entire game
 function moveBox() {
     box.innerHTML = Math.floor(positionX) + " " + Math.floor(positionY);
     const diagonal = keyState.a + keyState.d + keyState.s + keyState.w > 1;
@@ -80,9 +81,36 @@ function moveBox() {
     positionY = clamp(positionY , farDown, 0);
     box.style.left = `${positionX}px`;
     box.style.top = `${positionY}px`;
+
+    if(checkCollision(enemy,box)){
+        console.log("collision")
+    }
     
     requestAnimationFrame(moveBox);
 }
+
+function checkCollision(enemy, player) {
+    const rect1 = player.getBoundingClientRect();
+    const rect2 = enemy.getBoundingClientRect();
+
+    return !(
+        rect1.right < rect2.left || 
+        rect1.left > rect2.right || 
+        rect1.bottom < rect2.top || 
+        rect1.top > rect2.bottom
+    );
+}
+
+
+function startGame (){
+    positionX = farRight / 2;
+    positionY = farDown / 2;
+    box.style.display = "block";
+    startGameButton.style.display = "none";
+    shadowButton.style.display = "none";
+}
+
+// Checking keystates 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'd') keyState.d = true;
     if (e.key === 'a') keyState.a = true;
@@ -101,17 +129,6 @@ document.addEventListener('keyup', (e) => {
     if (e.key === 's') keyState.s = false;
 });
 
-function checkCollision(enemy, box) {
-    const rect1 = box.getBoundingClientRect();
-    const rect2 = enemy.getBoundingClientRect();
-
-    return !(
-        rect1.right < rect2.left || 
-        rect1.left > rect2.right || 
-        rect1.bottom < rect2.top || 
-        rect1.top > rect2.bottom
-    );
-}
 
 moveBox();
 
