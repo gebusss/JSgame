@@ -20,7 +20,7 @@ colors:
     border-radius: 10px;
     top: 10px;
     left: 10px;
-    visibility: hidden;
+    display: none;
 }
 #shadow{
     width: 100px;
@@ -49,29 +49,33 @@ body {
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
-#buttonShadow{
+.buttonShadow{
     width: 400px;
     height: 200px;
-    position: relative;
     z-index: -1;
+    position: relative;
     border-radius: 20px;
-    margin: 0;
-    padding: 0;
+    margin: 10px;
+    padding: 0px;
     background: #322D39;
     transform: translateY(4px) translateX(4px);
-    visibility: visible;
+    display: block;
+    
 }
-#startButton{
+#btnsh{
+    transform: translate(4px,14px);
+}
+.btn{
     width: 400px;
     height: 200px;
     position: absolute;
     border-radius: 20px;
     background: #FFCB47;
     border-color: #3C3744;
-    margin: 0;
-    visibility: visible;
+    margin: 0px;
+    display: block;
 }
-#startButton:hover{
+.btn:hover{
     background-color: #FFBA0A;
 }
 button:active{
@@ -79,8 +83,9 @@ button:active{
 }
 
 .enemy {
-    height: 10px;
-    width: 10px;
+    height: 20px;
+    width: 20px;
     background-color: red;
     position: absolute;
+    border-radius: 50%;
 }
