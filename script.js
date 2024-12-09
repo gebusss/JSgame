@@ -2,16 +2,20 @@ const box = document.getElementById('box');
 const shadow = document.getElementById('shadow');
 const body = document.getElementById('body');
 const startGameButton = document.querySelector('#startButton');
-const shadowButton = document.querySelector('#buttonShadow');
-const rulesButton = document.querySelector('#rulesButton')
-let positionX = 0;
-let positionY = 0;
+const rulesButton = document.querySelector('#rulesButton');
+const shadowButton = document.querySelectorAll('.buttonShadow');
+const center = document.querySelector('#center');
+let enemy;
+let playerPositionX = 0;
+let playerPositionY = 0;
 let direction = 1;
 let farRight = globalThis.innerWidth - box.offsetWidth;
 let farDown = globalThis.innerHeight - box.offsetHeight;
 let keySum;
 let enemyPositionX = 0;
 let enemyPositionY = 0;
+let enemyList = [];
+let score = 0;
 
 const keyState = {
     d: false,
@@ -24,8 +28,11 @@ function rules(){
     console.log("kys");
 }
 
+// ENEMIES ------------------------------------------------//
 function enemyGenerator(){
     enemy = document.createElement('div');
+    score++;
+    enemyList.push(enemy); 
     enemy.setAttribute("class", "enemy");
     body.append(enemy);
 }
@@ -56,43 +63,46 @@ function enemySpawner(){
     enemy.style.top = enemyPositionY + "px";
 }
 
-function moveEnemy(){
+//------------ MOVEMENT -------------------------------------------------//
 
+const SPEED = 10;
+const SPEED_DIAGONAL = SPEED / Math.sqrt(2);
+const clamp = (n, max, min) => Math.max(Math.min(n, max), min);
+
+function enemyShoot(){
+    enemySpeedX = Math.round(Math.random() * 10 + 1);
+    enemySpeedY = Math.round(Math.random() * 10 + 1);
+    let degrees = Math.atan(enemyPositionY/enemyPositionX) * 180 / Math.PI;
+
+    enemyPositionX += enemySpeedX + "px";
+    enemyPositionY += enemySpeedY + "px";
+     
 }
 
 
-startGameButton.addEventListener('click', startGame);
-const SPEED = 10;
-const SPEED_DIAGONAL = SPEED / Math.sqrt(2);
+function moveEnemy(){
+    enemyList.forEach(enemyShoot);
+}
 
-const clamp = (n, max, min) => Math.max(Math.min(n, max), min);
-
-
-// i have no fucking idea what is happening here. it was supposed to movement function but i guess its the entire game
 function moveBox() {
-    box.innerHTML = Math.floor(positionX) + " " + Math.floor(positionY);
+    box.innerHTML = Math.floor(playerPositionX) + " " + Math.floor(playerPositionY);
     const diagonal = keyState.a + keyState.d + keyState.s + keyState.w > 1;
     const speed = diagonal ? SPEED_DIAGONAL : SPEED;
     
-    if(keyState.a !== keyState.d) positionX += keyState.a ? -speed : speed;
-    if(keyState.w !== keyState.s) positionY += keyState.w ? -speed : speed;
+    if(keyState.a !== keyState.d) playerPositionX += keyState.a ? -speed : speed;
+    if(keyState.w !== keyState.s) playerPositionY += keyState.w ? -speed : speed;
     
-    positionX = clamp(positionX , farRight, 0);
-    positionY = clamp(positionY , farDown, 0);
-    box.style.left = `${positionX}px`;
-    box.style.top = `${positionY}px`;
-
-    if(checkCollision(enemy,box)){
-        console.log("collision")
-    }
-    
-    requestAnimationFrame(moveBox);
+    playerPositionX = clamp(playerPositionX , farRight, 0);
+    playerPositionY = clamp(playerPositionY , farDown, 0);
+    box.style.left = `${playerPositionX}px`;
+    box.style.top = `${playerPositionY}px`;
+   
 }
-
+//-------- COLLISION --------------------------------------------------------//
 function checkCollision(enemy, player) {
     const rect1 = player.getBoundingClientRect();
     const rect2 = enemy.getBoundingClientRect();
-
+    
     return !(
         rect1.right < rect2.left || 
         rect1.left > rect2.right || 
@@ -101,16 +111,34 @@ function checkCollision(enemy, player) {
     );
 }
 
+//--------------------------------------------------------------------//
+startGameButton.addEventListener('click', startGame);
+rulesButton.addEventListener('click', showRules);
 
-function startGame (){
-    positionX = farRight / 2;
-    positionY = farDown / 2;
-    box.style.display = "block";
+function hideMenu(){
     startGameButton.style.display = "none";
-    shadowButton.style.display = "none";
+    shadowButton[0].style.display = "none";
+    shadowButton[1].style.display = "none";
+    rulesButton.style.display = "none";
 }
 
-// Checking keystates 
+function startGame (){
+    playerPositionX = farRight / 2;
+    playerPositionY = farDown / 2;
+    box.style.display = "block";
+    hideMenu();
+}
+
+function showRules(){
+    let rulesBox = document.createElement('div');
+    center.append(rulesBox);
+    rulesBox.innerHTML = "Rules: ";
+    hideMenu();
+}
+
+//--------------------------------------------------------------------//
+
+// Checking keystates
 document.addEventListener('keydown', (e) => {
     if (e.key === 'd') keyState.d = true;
     if (e.key === 'a') keyState.a = true;
@@ -129,13 +157,22 @@ document.addEventListener('keyup', (e) => {
     if (e.key === 's') keyState.s = false;
 });
 
+//---Main game function-------------------------------------------------------//
+function updateGame(){
+    moveBox();
+    moveEnemy();
+    
+    
+    if(enemyList >= 1){ 
+        if(checkCollision(enemyList,box)){
+            console.log("collision")
+        }
+    }
+    requestAnimationFrame(updateGame);
+}
 
-moveBox();
-
+updateGame();
+//---- DEBUGGING STUFF ----------------------------------------------------------//
 function coordinates(){
     console.log(globalThis.outerWidth + "x" + globalThis.outerHeight);
 }
-
-
-
-
