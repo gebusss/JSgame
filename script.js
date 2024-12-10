@@ -24,8 +24,8 @@ class Enemy {
     constructor() {
         this.x = 0;
         this.y = 0;
-        this.speedX = this.getRandomInt(-10,10);
-        this.speedY = this.getRandomInt(-10,10);
+        this.speedX = this.getRandomIntExclude(-10,10,[0]);
+        this.speedY = this.getRandomIntExclude(-10,10,[0]);
         this.element = document.createElement('div');
         this.element.setAttribute("class", "enemy");
         body.append(this.element); // Append the enemy to the body
@@ -33,11 +33,13 @@ class Enemy {
         // Set the enemy's initial position and render it
         this.updatePosition();
     }
-    getRandomInt(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+    getRandomIntExclude(min, max, exclude) {
+        let randomNum;
+        do {
+          randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+        } while (exclude.includes(randomNum));
+        return randomNum;
+      }
 
     // Update the enemy's position
     updatePosition() {
@@ -51,6 +53,28 @@ class Enemy {
         this.x += this.speedX
         this.y += this.speedY
         this.updatePosition();
+        if(this.x>=globalThis.innerWidth - this.element.offsetWidth)
+            {
+                this.speedX=-this.speedX;
+               
+            }
+        if(this.x<=0)
+                {
+                    this.speedX=-this.speedX;
+                } 
+        if(this.y>=globalThis.innerHeight - this.element.offsetHeight)
+             {
+              this.speedY=-this.speedY;
+             }
+        if(this.y<=0)
+             {
+             this.speedY=-this.speedY;
+            }    
+        
+
+    }
+    bounce(){
+
     }
 
     // Check for collision with the player
@@ -65,6 +89,8 @@ class Enemy {
             rect1.top > rect2.bottom
         );
     }
+   
+    
 }
 
 // ENEMY SPAWNER ----------------------------------------------------//
@@ -76,6 +102,7 @@ function enemySpawner() {
         case 1:
             newEnemy.x = Math.floor(Math.random() * (globalThis.innerWidth - newEnemy.element.offsetWidth));
             newEnemy.y = 0;
+            
             break;
         case 2:
             newEnemy.x = globalThis.innerWidth - newEnemy.element.offsetWidth;
