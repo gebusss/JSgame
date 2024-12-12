@@ -5,18 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gra</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Honk&display=swap" rel="stylesheet">
 </head>
 <body id="body">
+    <div id="title"><h1>The Game</h1></div>
 
     <div id="center">
         <button id="startButton" class="btn"><h1>Start Game</h1></button>
         <div class="buttonShadow"></div>
         <button id="rulesButton" class="btn"><h1>Rules</h1></button>
-        <div class="buttonShadow" id="btnsh"></div>
+        <div class="buttonShadow" style="transform: translate(4px,14px)"></div>
+        <div id="rulesBox"></div>
+        <button id="backBtn" style="display: none;" class="btn">Back</button>
     </div>
+    <div id="score">Score: </div>
 
     <div id="box"></div>
     <div id="shadow"></div>

@@ -1,4 +1,4 @@
-/*
+/* 
 colors:
 #3C3744
 #090C9B
@@ -6,23 +6,44 @@ colors:
 #B4C5E4
 #FFBA0A
 */
+@font-face {
+    font-family: 'Silkscreen';
+    src: url('fonts/Silkscreen-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
 
+@font-face {
+    font-family: 'Silkscreen';
+    src: url('fonts/Silkscreen-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    font-family: 'Silkscreen', sans-serif;
+}
+
+body {
+    /* width: 100vw;
+    height: 100vh; */
+    background-color: #FFDC85;
+}
 
 #box {
     width: 95px;
     height: 95px;
     background-color: #FFCB47;
     position: absolute;
-    border: 5px;
-    padding: 10px;
-    border-style: solid;
-    border-color: #322D39;
-    border-radius: 10px;
+    border: 5px solid #322D39;
     top: 10px;
     left: 10px;
     display: none;
 }
-#shadow{
+
+#shadow {
     width: 100px;
     height: 100px;
     background-color: rgb(138, 0, 0);
@@ -32,60 +53,72 @@ colors:
     z-index: -1;
     visibility: hidden;
 }
-html, body {
-    padding: 0;
-    margin: 0;
-}
-body {
-    width: 100vw;
-    height: 100vh;
-    background-color: #FFDC85;
-}
-#center{
+
+#center {
     margin: 0;
     position: absolute;
     top: 50%;
     left: 50%;
-    -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
-.buttonShadow{
+
+.buttonShadow {
     width: 400px;
     height: 200px;
     z-index: -1;
     position: relative;
-    border-radius: 20px;
     margin: 10px;
     padding: 0px;
     background: #322D39;
     transform: translateY(4px) translateX(4px);
     display: block;
-    
 }
-#btnsh{
-    transform: translate(4px,14px);
-}
-.btn{
+
+.btn {
     width: 400px;
     height: 200px;
     position: absolute;
-    border-radius: 20px;
     background: #FFCB47;
     border-color: #3C3744;
     margin: 0px;
     display: block;
+    font-family: 'Silkscreen', sans-serif;
 }
-.btn:hover{
+
+.btn:hover {
     background-color: #FFBA0A;
 }
-button:active{
+
+button:active {
     transform: translate(4px, 4px);
+}
+
+#score {
+    position: absolute;
+    height: 150px;
+    width: 400px;
+    display: inline-block;
+    right: 0;
+    text-align: right;
+    color: #322D39;
+    font-size: 3em;
+    padding-right: 0.5em;
+    z-index: 1;
+    display: none;
+}
+#backBtn {
+    width: 100%;
+    height: 50px;
+    margin-top: 20px;
+}
+h1{
+    text-align: center;
 }
 
 .enemy {
     height: 20px;
     width: 20px;
-    background-color: red;
+    background-color: #FFBA0A;
+    border: 3px solid #322D39;
     position: absolute;
-    border-radius: 50%;
 }
