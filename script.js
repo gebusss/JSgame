@@ -5,12 +5,18 @@ const startGameButton = document.querySelector('#startButton');
 const rulesButton = document.querySelector('#rulesButton');
 const shadowButton = document.querySelectorAll('.buttonShadow');
 const center = document.querySelector('#center');
+const scoreBox = document.querySelector('#score');
+const rulesBox = document.querySelector('#rulesBox');
+const backBtn = document.querySelector('#backBtn');
+const titleBox = document.querySelector('#title');
 let playerPositionX = 0;
 let playerPositionY = 0;
 let farRight = globalThis.innerWidth - box.offsetWidth;
 let farDown = globalThis.innerHeight - box.offsetHeight;
 let enemyList = [];
 let score = 0;
+let lives = 5;
+let timer = 3;
 
 const keyState = {
     d: false,
@@ -49,32 +55,27 @@ class Enemy {
 
     // Move the enemy
     move() {
-        let degrees = Math.atan2(this.y, this.x);
-        this.x += this.speedX
-        this.y += this.speedY
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Check horizontal bounds
+        if (this.x + this.element.offsetWidth >= globalThis.innerWidth || this.x <= 0) {
+            this.speedX = -this.speedX; // Reverse horizontal direction
+            this.x = clamp(this.x, globalThis.innerWidth - this.element.offsetWidth, 0); // Clamp position
+        }
+
+        // Check vertical bounds
+        if (this.y + this.element.offsetHeight >= globalThis.innerHeight || this.y <= 0) {
+            this.speedY = -this.speedY; // Reverse vertical direction
+            this.y = clamp(this.y, globalThis.innerHeight - this.element.offsetHeight, 0); // Clamp position
+        }
+
+        // Update the position of the enemy
         this.updatePosition();
-        if(this.x>=globalThis.innerWidth - this.element.offsetWidth)
-            {
-                this.speedX=-this.speedX;
-               
-            }
-        if(this.x<=0)
-                {
-                    this.speedX=-this.speedX;
-                } 
-        if(this.y>=globalThis.innerHeight - this.element.offsetHeight)
-             {
-              this.speedY=-this.speedY;
-             }
-        if(this.y<=0)
-             {
-             this.speedY=-this.speedY;
-            }    
-        
-
     }
-    bounce(){
 
+    die(){
+        this.element.remove();
     }
 
     // Check for collision with the player
@@ -97,7 +98,7 @@ class Enemy {
 function enemySpawner() {
     let edge = Math.floor(Math.random() * 4 + 1);
     let newEnemy = new Enemy(); // Create a new enemy instance
-
+    score = enemyList.length + 1;
     switch (edge) {
         case 1:
             newEnemy.x = Math.floor(Math.random() * (globalThis.innerWidth - newEnemy.element.offsetWidth));
@@ -128,7 +129,6 @@ const SPEED_DIAGONAL = SPEED / Math.sqrt(2);
 const clamp = (n, max, min) => Math.max(Math.min(n, max), min);
 
 function moveBox() {
-    box.innerHTML = Math.floor(playerPositionX) + " " + Math.floor(playerPositionY);
     const diagonal = keyState.a + keyState.d + keyState.s + keyState.w > 1;
     const speed = diagonal ? SPEED_DIAGONAL : SPEED;
     
@@ -155,29 +155,53 @@ function checkCollision(enemy, player) {
 }
 
 // GAME FUNCTIONS ----------------------------------------------------//
-startGameButton.addEventListener('click', startGame);
-rulesButton.addEventListener('click', showRules);
 
 function hideMenu() {
     startGameButton.style.display = "none";
     shadowButton[0].style.display = "none";
     shadowButton[1].style.display = "none";
     rulesButton.style.display = "none";
+    titleBox.style.display = "none";
 }
+let spawnInterval;
 
 function startGame() {
     playerPositionX = farRight / 2;
     playerPositionY = farDown / 2;
     box.style.display = "block";
+    scoreBox.style.display = "block";
     hideMenu();
+    spawnInterval = setInterval(enemySpawner, 3000);
+}
+function showRules() {
+    rulesBox.innerHTML = "Rules: Move with WASD keys. <br> Balls spawn every 3 seconds. <br> Everytime a new ball spawns you get a point. <br> You get 5 lives. <br> If you go down to 0 lives you lose.";
+    hideMenu();
+    backBtn.style.display = "block";
+}
+function f5() {
+    window.location.reload(); //literally instead of doing a normal back button I just reload the site XD
 }
 
-function showRules() {
-    let rulesBox = document.createElement('div');
-    center.append(rulesBox);
-    rulesBox.innerHTML = "Rules: Move with WASD keys.";
-    hideMenu();
+// function back(){
+//     startGameButton.style.display = "block";
+//     shadowButton[0].style.display = "block";
+//     shadowButton[1].style.display = "block";
+//     backBtn.style.display = "none";
+//     rulesButton.style.display = "block";
+//     rulesBox.innerHTML = "";
+// }
+function gameOver() {
+    score = 0;
+    lives = 5;
+    rulesBox.innerHTML = `<h1> Game Over! <br><br> Score: ${score2} </h1>`;
+    backBtn.style.display = "block";
+    backBtn.addEventListener('click',f5);
+    box.style.zIndex = "-1";
+    scoreBox.style.display = "none";
 }
+backBtn.addEventListener('click', f5);
+startGameButton.addEventListener('click', startGame);
+rulesButton.addEventListener('click', showRules);
 
 // Checking keystates
 document.addEventListener('keydown', (e) => {
@@ -185,8 +209,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'a') keyState.a = true;
     if (e.key === 'w') keyState.w = true;
     if (e.key === 's') keyState.s = true;
-    if (e.key === 'l') coordinates();
-    if (e.key === 'o') enemySpawner();
+    // if (e.key === 'o') enemySpawner(); spawning enemies on O /for debugging
     farRight = globalThis.innerWidth - box.offsetWidth;
     farDown = globalThis.innerHeight - box.offsetHeight;
 });
@@ -197,25 +220,29 @@ document.addEventListener('keyup', (e) => {
     if (e.key === 'w') keyState.w = false;
     if (e.key === 's') keyState.s = false;
 });
-
+let score2;
+let gameLoopId;
 // Main game loop
 function updateGame() {
     moveBox();
     enemyList.forEach(enemy => enemy.move()); // Move each enemy
-
     // Check for collisions
     enemyList.forEach(enemy => {
         if (enemy.checkCollision(box)) {
-            console.log("Collision with an enemy!");
+            lives--;
+            enemy.die();
         }
     });
-
-    requestAnimationFrame(updateGame); // Keep the game loop going
+    scoreBox.innerHTML = `Score: ${score} <br>  Lives: ${lives}`;
+    if(lives === 0){
+        cancelAnimationFrame(gameLoopId);
+        enemyList.forEach(enemy => enemy.die()); // I dont know what looks better 
+        score2 = score;
+        gameOver();
+        setInterval(enemySpawner, 20);
+        return;
+    }
+    
+    gameLoopId = requestAnimationFrame(updateGame); // Keep the game loop going
 }
-
 updateGame();
-
-// DEBUGGING STUFF ------------------------------------------------------//
-function coordinates() {
-    console.log(globalThis.outerWidth + "x" + globalThis.outerHeight);
-}
