@@ -30,8 +30,8 @@ class Enemy {
     constructor() {
         this.x = 0;
         this.y = 0;
-        this.speedX = this.getRandomIntExclude(-10,10,[0]);
-        this.speedY = this.getRandomIntExclude(-10,10,[0]);
+        this.speedX = this.getRandomIntExclude(-10,10,[-2,-1,0,1,2]);
+        this.speedY = this.getRandomIntExclude(-10,10,[-2,-1,0,1,2]);
         this.element = document.createElement('div');
         this.element.setAttribute("class", "enemy");
         body.append(this.element); // Append the enemy to the body
@@ -209,7 +209,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'a') keyState.a = true;
     if (e.key === 'w') keyState.w = true;
     if (e.key === 's') keyState.s = true;
-    // if (e.key === 'o') enemySpawner(); spawning enemies on O /for debugging
+    //if (e.key === 'o') enemySpawner(); //spawning enemies on O /for debugging
     farRight = globalThis.innerWidth - box.offsetWidth;
     farDown = globalThis.innerHeight - box.offsetHeight;
 });
