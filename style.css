@@ -122,3 +122,10 @@ h1{
     border: 3px solid #322D39;
     position: absolute;
 }
+.enemy-holly{
+    height: 20px;
+    width: 20px;
+    background-image: url("pngegg.png");
+    background-size: contain;
+    position: absolute;
+}

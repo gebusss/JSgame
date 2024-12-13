@@ -17,27 +17,32 @@ let enemyList = [];
 let score = 0;
 let lives = 5;
 let timer = 3;
-
+let enemyClass = 'enemy';
 const keyState = {
     d: false,
     a: false,
     w: false, 
     s: false,
 };
-
+hollyJollyCheck()
 // ENEMY CLASS --------------------------------------------------------//
 class Enemy {
     constructor() {
         this.x = 0;
         this.y = 0;
-        this.speedX = this.getRandomIntExclude(-10,10,[0]);
-        this.speedY = this.getRandomIntExclude(-10,10,[0]);
+        this.speedX = this.getRandomIntExclude(-10,10,[-2,-1,0,1,2]);
+        this.speedY = this.getRandomIntExclude(-10,10,[-2,-1,0,1,2]);
         this.element = document.createElement('div');
-        this.element.setAttribute("class", "enemy");
+        this.element.setAttribute("class", enemyClass);
         body.append(this.element); // Append the enemy to the body
 
         // Set the enemy's initial position and render it
         this.updatePosition();
+       
+    }
+    changeClass(){
+        this.element.removeAttribute('class','enemy');
+        this.element.setAttribute('class','enemy-holly');
     }
     getRandomIntExclude(min, max, exclude) {
         let randomNum;
@@ -75,6 +80,8 @@ class Enemy {
     }
 
     die(){
+        const index = enemyList.indexOf(this);
+        enemyList.splice(index, 1);
         this.element.remove();
     }
 
@@ -98,7 +105,8 @@ class Enemy {
 function enemySpawner() {
     let edge = Math.floor(Math.random() * 4 + 1);
     let newEnemy = new Enemy(); // Create a new enemy instance
-    score = enemyList.length + 1;
+    score += 1;
+    enemyList.push(newEnemy);
     switch (edge) {
         case 1:
             newEnemy.x = Math.floor(Math.random() * (globalThis.innerWidth - newEnemy.element.offsetWidth));
@@ -124,7 +132,7 @@ function enemySpawner() {
 }
 
 // MOVEMENT ------------------------------------------------------------//
-const SPEED = 10;
+const SPEED = 20;
 const SPEED_DIAGONAL = SPEED / Math.sqrt(2);
 const clamp = (n, max, min) => Math.max(Math.min(n, max), min);
 
@@ -209,7 +217,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'a') keyState.a = true;
     if (e.key === 'w') keyState.w = true;
     if (e.key === 's') keyState.s = true;
-    // if (e.key === 'o') enemySpawner(); spawning enemies on O /for debugging
+    //if (e.key === 'o') enemySpawner(); //spawning enemies on O /for debugging
     farRight = globalThis.innerWidth - box.offsetWidth;
     farDown = globalThis.innerHeight - box.offsetHeight;
 });
@@ -220,6 +228,44 @@ document.addEventListener('keyup', (e) => {
     if (e.key === 'w') keyState.w = false;
     if (e.key === 's') keyState.s = false;
 });
+
+//swieta
+function hollyJolly(){
+    body.style.backgroundImage="url(tlo.jpg)"
+    body.style.backgroundSize="100%"
+    
+    box.style.backgroundImage="url(santa.png)"
+    box.style.backgroundSize="100%"
+    box.style.backgroundColor="transparent"
+    box.style.borderStyle="none"
+    enemyList.forEach(enemy => enemy.changeClass());
+    enemyClass = 'enemy-holly';
+    startGameButton.style.backgroundColor="#bc4749"
+    rulesButton.style.backgroundColor="#bc4749"
+    shadowButton.forEach(button => {
+        button.style.background = "#386641";
+    });
+    const audio = document.createElement('audio');
+    audio.setAttribute('src', 'laufey.mp3'); 
+    audio.volume=0.1
+    document.body.appendChild(audio)
+    audio.play() 
+    
+    
+}
+function hollyJollyCheck() {
+    input="";
+    document.addEventListener('keydown', (e) => {
+        input +=e.key;
+        if(input.endsWith("snowman"))
+        {
+            hollyJolly()
+            input=""
+        }
+        
+    })
+}
+
 let score2;
 let gameLoopId;
 // Main game loop
@@ -230,6 +276,7 @@ function updateGame() {
     enemyList.forEach(enemy => {
         if (enemy.checkCollision(box)) {
             lives--;
+            console.log("collision",enemy);
             enemy.die();
         }
     });
@@ -242,7 +289,8 @@ function updateGame() {
         setInterval(enemySpawner, 20);
         return;
     }
-    
+    console.log(lives + " " + score);
     gameLoopId = requestAnimationFrame(updateGame); // Keep the game loop going
 }
+
 updateGame();
