@@ -125,7 +125,7 @@ h1{
 .enemy-holly{
     height: 20px;
     width: 20px;
-    background-color: #17e439;
-    border: 3px solid #322D39;
+    background-image: url("pngegg.png");
+    background-size: contain;
     position: absolute;
 }
