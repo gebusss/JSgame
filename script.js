@@ -24,20 +24,21 @@ const keyState = {
     w: false, 
     s: false,
 };
-
+hollyJollyCheck()
 // ENEMY CLASS --------------------------------------------------------//
 class Enemy {
     constructor() {
         this.x = 0;
         this.y = 0;
-        this.speedX = this.getRandomIntExclude(-10,10,[0]);
-        this.speedY = this.getRandomIntExclude(-10,10,[0]);
+        this.speedX = this.getRandomIntExclude(-10,10,[-2,-1,0,1,2]);
+        this.speedY = this.getRandomIntExclude(-10,10,[-2,-1,0,1,2]);
         this.element = document.createElement('div');
         this.element.setAttribute("class", "enemy");
         body.append(this.element); // Append the enemy to the body
 
         // Set the enemy's initial position and render it
         this.updatePosition();
+       
     }
     getRandomIntExclude(min, max, exclude) {
         let randomNum;
@@ -99,6 +100,7 @@ function enemySpawner() {
     let edge = Math.floor(Math.random() * 4 + 1);
     let newEnemy = new Enemy(); // Create a new enemy instance
     score = enemyList.length + 1;
+    enemyList.push(newEnemy);
     switch (edge) {
         case 1:
             newEnemy.x = Math.floor(Math.random() * (globalThis.innerWidth - newEnemy.element.offsetWidth));
@@ -209,7 +211,7 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'a') keyState.a = true;
     if (e.key === 'w') keyState.w = true;
     if (e.key === 's') keyState.s = true;
-    // if (e.key === 'o') enemySpawner(); spawning enemies on O /for debugging
+    //if (e.key === 'o') enemySpawner(); //spawning enemies on O /for debugging
     farRight = globalThis.innerWidth - box.offsetWidth;
     farDown = globalThis.innerHeight - box.offsetHeight;
 });
@@ -245,4 +247,41 @@ function updateGame() {
     
     gameLoopId = requestAnimationFrame(updateGame); // Keep the game loop going
 }
+
+//swieta
+function hollyJolly(){
+    body.style.backgroundImage="url(tlo.jpg)"
+    body.style.backgroundSize="100%"
+    
+    box.style.backgroundImage="url(santa.png)"
+    box.style.backgroundSize="100%"
+    box.style.backgroundColor="transparent"
+    box.style.borderStyle="none"
+    startGameButton.style.backgroundColor="#bc4749"
+    rulesButton.style.backgroundColor="#bc4749"
+    shadowButton.forEach(button => {
+        button.style.background = "#386641";
+    });
+    const audio = document.createElement('audio');
+    audio.setAttribute('src', 'laufey.mp3'); 
+    audio.volume=0.1
+    document.body.appendChild(audio)
+    audio.play() 
+   
+   
+}
+function hollyJollyCheck() {
+    input="";
+   document.addEventListener('keydown', (e) => {
+       input +=e.key;
+        if(input.endsWith("snowman"))
+        {
+            hollyJolly()
+            input=""
+        }
+        
+    })
+}
+
+
 updateGame();
